@@ -126,7 +126,7 @@ EOF
 ln -sf /etc/nginx/sites-available/matrix /etc/nginx/sites-enabled/matrix
 ln -sf /etc/nginx/sites-available/element /etc/nginx/sites-enabled/element
 
-nginx -t && systemctl reload nginx
+nginx -t && systemctl restart nginx
 
 ### SSL
 echo "=== Getting SSL certs ==="
