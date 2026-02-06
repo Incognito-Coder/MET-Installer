@@ -1,18 +1,18 @@
 #!/bin/bash
-set -e
+set -euo pipefail
 
 echo "=== Stopping services ==="
-systemctl stop matrix-synapse coturn nginx
-systemctl disable matrix-synapse coturn nginx
+systemctl stop matrix-synapse coturn nginx || true
+systemctl disable matrix-synapse coturn nginx || true
 
 echo "=== Removing UFW rules ==="
 if command -v ufw &> /dev/null; then
-  ufw delete allow 22
-  ufw delete allow 80
-  ufw delete allow 443
-  ufw delete allow 3478
-  ufw delete allow 5349
-  ufw delete allow 49152:65535/udp
+  ufw delete allow 22 || true
+  ufw delete allow 80 || true
+  ufw delete allow 443 || true
+  ufw delete allow 3478 || true
+  ufw delete allow 5349 || true
+  ufw delete allow 49152:65535/udp || true
 fi
 
 echo "=== Removing SSL certs ==="
