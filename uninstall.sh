@@ -30,8 +30,20 @@ rm -f /etc/nginx/sites-enabled/matrix
 rm -f /etc/nginx/sites-enabled/element
 
 echo "=== Purging packages ==="
-apt purge -y matrix-synapse-py3 element-web coturn nginx certbot python3-certbot-nginx postgresql postgresql-contrib
-apt autoremove -y
+INSTALLED_PACKAGES=$(dpkg -l | awk '{print $2}')
+packages_to_remove="matrix-synapse-py3 element-web coturn nginx certbot python3-certbot-nginx postgresql postgresql-contrib"
+packages_to_purge=""
+
+for pkg in $packages_to_remove; do
+    if echo "$INSTALLED_PACKAGES" | grep -q "^$pkg$"; then
+        packages_to_purge="$packages_to_purge $pkg"
+    fi
+done
+
+if [ -n "$packages_to_purge" ]; then
+    apt purge -y $packages_to_purge
+    apt autoremove -y
+fi
 
 echo "=== Removing repositories ==="
 rm -f /etc/apt/sources.list.d/matrix-org.list
