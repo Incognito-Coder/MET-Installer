@@ -19,8 +19,10 @@ echo "=== Installing base packages ==="
 apt install -y curl wget gnupg lsb-release ufw nginx certbot python3-certbot-nginx postgresql coturn
 
 echo "=== Creating Synapse database ==="
-sudo -u postgres psql -c "CREATE USER IF NOT EXISTS synapse_user WITH PASSWORD '$SYNAPSE_DB_PASSWORD';"
-sudo -u postgres psql -c "CREATE DATABASE IF NOT EXISTS synapse_db WITH OWNER synapse_user TEMPLATE template0 LC_COLLATE 'C' LC_CTYPE 'C';"
+sudo -u postgres psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='synapse_user'" | grep -q 1 || sudo -u postgres psql -c "CREATE USER synapse_user WITH PASSWORD '$SYNAPSE_DB_PASSWORD';"
+if ! sudo -u postgres psql -lqt | cut -d \| -f 1 | grep -qw synapse_db; then
+    sudo -u postgres psql -c "CREATE DATABASE synapse_db WITH OWNER synapse_user TEMPLATE template0 LC_COLLATE 'C' LC_CTYPE 'C';"
+fi
 
 ### MATRIX REPO
 echo "=== Adding Matrix repo ==="
