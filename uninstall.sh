@@ -16,7 +16,12 @@ if command -v ufw &> /dev/null; then
 fi
 
 echo "=== Removing SSL certs ==="
-certbot delete --non-interactive --cert-name $(grep -oP '(?<=d=)[^ ]+' /etc/letsencrypt/renewal/*.conf | head -n 1)
+CERT_NAME=$(grep -oP '(?<=d=)[^ ]+' /etc/letsencrypt/renewal/*.conf | head -n 1 || true)
+if [ -n "$CERT_NAME" ]; then
+  certbot delete --non-interactive --cert-name "$CERT_NAME"
+else
+  echo "No certbot certificates found to remove."
+fi
 
 echo "=== Removing Nginx configurations ==="
 rm -f /etc/nginx/sites-available/matrix
